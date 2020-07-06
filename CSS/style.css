@@ -7,13 +7,13 @@
     box-shadow: 5px 5px 5px 5px #888888;
 }
 
+.resultDisplay:first-child { margin-left: 0}
+
 .resultDisplay {
-    first-child { margin-left: 0};
     margin: 3% 8% 2% 5%;
     height: 40px;
     width: 90%;
     text-align: center;
-    float: center;
     background-color: azure;
     border: 1px solid black;
     border-radius: 4px;
