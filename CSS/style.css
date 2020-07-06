@@ -1,0 +1,39 @@
+.md-modeless.form.md-modeless-content.calculator {
+    margin-left: 50px;
+    height: 300px;
+    width: 500px;
+    background: aliceblue;
+    border-radius: 12px;
+    box-shadow: 5px 5px 5px 5px #888888;
+}
+
+.resultDisplay {
+    first-child { margin-left: 0};
+    margin: 3% 8% 2% 5%;
+    height: 40px;
+    width: 90%;
+    text-align: center;
+    float: center;
+    background-color: azure;
+    border: 1px solid black;
+    border-radius: 4px;
+}
+
+.md-button.md-primary.md-raised.buttons {
+    margin: 2%;
+    background-color: #3fa8f4;
+}
+
+.md-button.md-primary.md-raised.buttonCE {
+    margin: 2%;
+    background-color:burlywood;
+}
+
+.md-button.md-primary.md-raised.operations {
+    margin: 2%;
+    background-color:salmon;
+}
+
+.md-button.md-primary.md-raised.alert {
+    background-color: crimson;
+}

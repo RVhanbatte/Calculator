@@ -1,0 +1,48 @@
+<md-modeless aria-label="Calculator">
+  <form>
+    <md-toolbar md-scroll-shrink>
+        <span style="text-align: center" class="md-sticky-no-effect"><br>Calculator...!!!
+        <span flex></span>
+        <md-button style="float: right" ng-click="closeDialog()" aria-label="Close" md-no-ink="true">
+            <span style="float: center; color: yellow">X</span>
+        </md-button>
+        </span>
+    </md-toolbar>
+    <md-divider></md-divider>
+    <md-modeless-content class="calculator">
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        
+        <!-- Display result -->
+        <div class="resultDisplay">{{model.resultDisplay}}</div>
+        
+        <!-- Display numbers and operations -->
+        <section layout="row" layout-sm="column" layout-align="center center">
+            <md-button class="md-raised md-primary buttons" ng-click="numberClicked(1)">1</md-button>
+            <md-button class="md-raised md-primary buttons" ng-click="numberClicked(2)">2</md-button>
+            <md-button class="md-raised md-primary buttons" ng-click="numberClicked(3)">3</md-button>
+            <md-button class="md-raised md-primary operations" ng-click="operations('+')">+</md-button> 
+        </section>
+
+        <section layout="row" layout-sm="column" layout-align="center center">
+            <md-button class="md-raised md-primary buttons" ng-click="numberClicked(4)">4</md-button>
+            <md-button class="md-raised md-primary buttons" ng-click="numberClicked(5)">5</md-button>
+            <md-button class="md-raised md-primary buttons" ng-click="numberClicked(6)">6</md-button>
+            <md-button class="md-raised md-primary operations" ng-click="operations('-')">-</md-button>
+        </section>
+
+        <section layout="row" layout-sm="column" layout-align="center center">
+            <md-button class="md-raised md-primary buttons" ng-click="numberClicked(7)">7</md-button>
+            <md-button class="md-raised md-primary buttons" ng-click="numberClicked(8)">8</md-button>
+            <md-button class="md-raised md-primary buttons" ng-click="numberClicked(9)">9</md-button>
+            <md-button class="md-raised md-primary operations" ng-click="operations('*')">*</md-button>
+        </section>
+
+        <section layout="row" layout-sm="column" layout-align="center center">
+            <md-button class="md-raised md-primary buttons" ng-click="numberClicked(0)">0</md-button>
+            <md-button class="md-raised md-primary buttonCE" ng-click="reset()">CE</md-button>
+            <md-button class="md-raised md-primary operations" ng-click="enter()">=</md-button>                
+            <md-button class="md-raised md-primary operations" ng-click="operations('/')">/</md-button>
+        </section>
+      </md-modeless-content>
+  </form>
+</md-modeless>
