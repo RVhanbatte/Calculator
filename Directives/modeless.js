@@ -1,1 +1,342 @@
-var mdModeless = {}; !function () { "use strict"; angular.module("mdModeless", ["material.core", "material.components.backdrop", "myDraggable"]).directive("mdModeless", ["$$rAF", "$mdTheming", function (e, t) { return { restrict: "E", link: function (n, o, a) { t(o), e(function () { var e = o[0].querySelector("md-content"); e && e.scrollHeight > e.clientHeight && o.addClass("md-content-overflow") }) } } }]).provider("$mdModeless", ["$$interimElementProvider", function (e) { return e("$mdModeless").setDefaults({ methods: ["disableParentScroll", "hasBackdrop", "clickOutsideToClose", "escapeToClose", "targetEvent", "parent"], options: function (e, t, n, o, a, l, r, s, d, i, c) { return { hasBackdrop: !1, isolateScope: !0, onShow: function (c, m, f) { m = n.extractElementByName(m, "md-modeless"), f.parent = angular.element(f.parent), f.popInTarget = angular.element((f.targetEvent || {}).target); var h = function () { var e = m[0].querySelector(".modeless-close"); if (!e) { var t = m[0].querySelectorAll(".md-actions button"); e = t[t.length - 1] } return angular.element(e) }(); if (f.hasBackdrop) { var b = f.parent[0] == t[0].body && t[0].documentElement && t[0].documentElement.scrollTop ? angular.element(t[0].documentElement) : f.parent, g = b.prop("scrollTop"); f.backdrop = angular.element('<md-backdrop class="md-modeless-backdrop md-opaque">'), f.backdrop.css("top", g + "px"), a.inherit(f.backdrop, f.parent), d.enter(f.backdrop, f.parent), m.css("top", g + "px") } var k = "modeless", v = h; "alert" === f.$type && (k = "alertmodeless", v = m.find("md-content")); (function (t, o, a) { t.attr({ role: o, tabIndex: "-1" }); var l = t.find("md-content"); 0 === l.length && (l = t); var r = t.attr("id") || "modeless_" + n.nextUid(); l.attr("id", r), t.attr("aria-describedby", r), a.ariaLabel ? e.expect(t, "aria-label", a.ariaLabel) : e.expectAsync(t, "aria-label", function () { var e = l.text().split(/\s+/); return e.length > 3 && (e = e.slice(0, 3).concat("...")), e.join(" ") }) })(m.find("md-modeless"), k, f), f.disableParentScroll && (f.lastOverflow = f.parent.css("overflow"), f.parent.css("overflow", "hidden")); return (C = m, T = f.parent, y = f.popInTarget && f.popInTarget.length && f.popInTarget, E = C.find("md-modeless"), T.append(C), u(E, y), i(function () { E.addClass("transition-in").css(o.CSS.TRANSFORM, "") }), n.transitionEndPromise(E)).then(function () { p(m, !0), f.escapeToClose && (f.rootElementKeyupCallback = function (e) { e.keyCode === o.KEY_CODE.ESCAPE && r(l.cancel) }, s.on("keyup", f.rootElementKeyupCallback)), f.clickOutsideToClose && (f.modelessClickOutsideCallback = function (e) { e.target === m[0] && r(l.cancel) }, m.on("click", f.modelessClickOutsideCallback)), f.focusOnOpen && v.focus() }); var C, T, y, E }, onRemove: function (e, t, o) { o.backdrop && d.leave(o.backdrop); o.disableParentScroll && (o.parent.css("overflow", o.lastOverflow), delete o.lastOverflow); o.escapeToClose && s.off("keyup", o.rootElementKeyupCallback); o.clickOutsideToClose && t.off("click", o.modelessClickOutsideCallback); return p(t, !1), (a = t, o.parent, l = o.popInTarget && o.popInTarget.length && o.popInTarget, r = a.find("md-modeless"), r.addClass("transition-out").removeClass("transition-in"), u(r, l), n.transitionEndPromise(r)).then(function () { o.scope.$destroy(), t.remove(), o.popInTarget && o.popInTarget.focus() }); var a, l, r }, clickOutsideToClose: !1, escapeToClose: !0, targetEvent: null, focusOnOpen: !0, disableParentScroll: !0, transformTemplate: function (e) { return '<div my-draggable class="md-modeless-container">' + e + "</div>" } }; function m(e, t) { if (-1 !== t.indexOf(e.nodeName)) return !0 } function p(e, t) { var n = "aria-hidden"; (function e(o) { for (; o.parentNode;) { if (o === document.body) return; for (var a = o.parentNode.children, l = 0; l < a.length; l++)o === a[l] || m(a[l], ["SCRIPT", "STYLE"]) || a[l].setAttribute(n, t); e(o = o.parentNode) } })(e = e[0]) } function u(e, t) { if (t) { var n = t[0].getBoundingClientRect(), a = e[0].getBoundingClientRect(), l = Math.min(.5, n.width / a.width), r = Math.min(.5, n.height / a.height); e.css(o.CSS.TRANSFORM, "translate3d(" + (-a.left + n.left + n.width / 2 - a.width / 2) + "px," + (-a.top + n.top + n.height / 2 - a.height / 2) + "px,0) scale(" + l + "," + r + ")") } } } }).addPreset("alert", { methods: ["title", "content", "ariaLabel", "ok", "theme"], options: t }).addPreset("confirm", { methods: ["title", "content", "ariaLabel", "ok", "cancel", "theme"], options: t }); function t(e, t) { return { template: ['<md-modeless md-theme="{{ modeless.theme }}" aria-label="{{ modeless.ariaLabel }}">', '<md-content role="document" tabIndex="0">', '<h2 class="md-title">{{ modeless.title }}</h2>', "<p>{{ modeless.content }}</p>", "</md-content>", '<div class="md-actions">', '<md-button ng-if="modeless.$type == \'confirm\'" ng-click="modeless.abort()">', "{{ modeless.cancel }}", "</md-button>", '<md-button ng-click="modeless.hide()" class="md-primary">', "{{ modeless.ok }}", "</md-button>", "</div>", "</md-modeless>"].join(""), controller: function () { this.hide = function () { e.hide(!0) }, this.abort = function () { e.cancel() } }, controllerAs: "modeless", bindToController: !0, theme: t.defaultTheme() } } }]) }();
+// modeless.js
+
+// Modification of angular material dialog class to support modeless dialogs 
+// (see dialog.js)
+var mdModeless = {};
+
+(function () {
+	'use strict';
+
+	angular.module('mdModeless', [
+  'material.core',
+  'material.components.backdrop',
+  'myDraggable'
+])
+  .directive('mdModeless', ['$$rAF', '$mdTheming', MdModelessDirective])
+  .provider('$mdModeless', ['$$interimElementProvider', MdModelessProvider]);
+
+function MdModelessDirective($$rAF, $mdTheming) {
+  return {
+    restrict: 'E',
+    link: function(scope, element, attr) {
+      $mdTheming(element);
+      $$rAF(function() {
+        var content = element[0].querySelector('md-content');
+        if (content && content.scrollHeight > content.clientHeight) {
+          element.addClass('md-content-overflow');
+        }
+      });
+    }
+  };
+}
+
+function MdModelessProvider($$interimElementProvider) {
+
+  var alertModelessMethods = ['title', 'content', 'ariaLabel', 'ok'];
+
+  return $$interimElementProvider('$mdModeless')
+    .setDefaults({
+      methods: ['disableParentScroll', 'hasBackdrop', 'clickOutsideToClose', 'escapeToClose', 'targetEvent', 'parent'],
+      options: modelessDefaultOptions
+    })
+    .addPreset('alert', {
+      methods: ['title', 'content', 'ariaLabel', 'ok', 'theme'],
+      options: advancedModelessOptions
+    })
+    .addPreset('confirm', {
+      methods: ['title', 'content', 'ariaLabel', 'ok', 'cancel', 'theme'],
+      options: advancedModelessOptions
+    });
+
+  /* @ngInject */
+  function advancedModelessOptions($mdModeless, $mdTheming) {
+    return {
+      template: [
+        '<md-modeless md-theme="{{ modeless.theme }}" aria-label="{{ modeless.ariaLabel }}">',
+          '<md-content role="document" tabIndex="0">',
+            '<h2 class="md-title">{{ modeless.title }}</h2>',
+            '<p>{{ modeless.content }}</p>',
+          '</md-content>',
+          '<div class="md-actions">',
+            '<md-button ng-if="modeless.$type == \'confirm\'" ng-click="modeless.abort()">',
+              '{{ modeless.cancel }}',
+            '</md-button>',
+            '<md-button ng-click="modeless.hide()" class="md-primary">',
+              '{{ modeless.ok }}',
+            '</md-button>',
+          '</div>',
+        '</md-modeless>'
+      ].join(''),
+      controller: function mdModelessCtrl() {
+        this.hide = function() {
+          $mdModeless.hide(true);
+        };
+        this.abort = function() {
+          $mdModeless.cancel();
+        };
+      },
+      controllerAs: 'modeless',
+      bindToController: true,
+      theme: $mdTheming.defaultTheme()
+    };
+  }
+
+  /* @ngInject */
+  function modelessDefaultOptions($mdAria, $document, $mdUtil, $mdConstant, $mdTheming, $mdModeless, $timeout, $rootElement, $animate, $$rAF, $q) {
+    return {
+      hasBackdrop: false,
+      isolateScope: true,
+      onShow: onShow,
+      onRemove: onRemove,
+      clickOutsideToClose: false,
+      escapeToClose: true,
+      targetEvent: null,
+      focusOnOpen: true,
+      disableParentScroll: true,
+      transformTemplate: function(template) {
+      	return '<div my-draggable class="md-modeless-container">' + template + '</div>';
+      }
+    };
+
+    // On show method for modelesss
+    function onShow(scope, element, options) {
+      element = $mdUtil.extractElementByName(element, 'md-modeless');
+
+      // Incase the user provides a raw dom element, always wrap it in jqLite
+      options.parent = angular.element(options.parent);
+
+      options.popInTarget = angular.element((options.targetEvent || {}).target);
+      var closeButton = findCloseButton();
+
+      if (options.hasBackdrop) {
+        // Fix for IE 10
+        var computeFrom = (options.parent[0] == $document[0].body && $document[0].documentElement
+                           && $document[0].documentElement.scrollTop) ? angular.element($document[0].documentElement) : options.parent;
+        var parentOffset = computeFrom.prop('scrollTop');
+        options.backdrop = angular.element('<md-backdrop class="md-modeless-backdrop md-opaque">');
+        options.backdrop.css('top', parentOffset +'px');
+        $mdTheming.inherit(options.backdrop, options.parent);
+        $animate.enter(options.backdrop, options.parent);
+        element.css('top', parentOffset +'px');
+      }
+
+      var role = 'modeless',
+          elementToFocus = closeButton;
+
+      if (options.$type === 'alert') {
+        role = 'alertmodeless';
+        elementToFocus = element.find('md-content');
+      }
+
+      configureAria(element.find('md-modeless'), role, options);
+
+      if (options.disableParentScroll) {
+        options.lastOverflow = options.parent.css('overflow');
+        options.parent.css('overflow', 'hidden');
+      }
+
+      return modelessPopIn(
+        element,
+        options.parent,
+        options.popInTarget && options.popInTarget.length && options.popInTarget
+      )
+      .then(function() {
+
+        applyAriaToSiblings(element, true);
+
+        if (options.escapeToClose) {
+          options.rootElementKeyupCallback = function(e) {
+            if (e.keyCode === $mdConstant.KEY_CODE.ESCAPE) {
+              $timeout($mdModeless.cancel);
+            }
+          };
+          $rootElement.on('keyup', options.rootElementKeyupCallback);
+        }
+
+        if (options.clickOutsideToClose) {
+          options.modelessClickOutsideCallback = function(ev) {
+            // Only close if we click the flex container outside the backdrop
+            if (ev.target === element[0]) {
+              $timeout($mdModeless.cancel);
+            }
+          };
+          element.on('click', options.modelessClickOutsideCallback);
+        }
+
+        if (options.focusOnOpen) {
+          elementToFocus.focus();
+        }
+      });
+
+
+      function findCloseButton() {
+        //If no element with class modeless-close, try to find the last
+        //button child in md-actions and assume it is a close button
+        var closeButton = element[0].querySelector('.modeless-close');
+        if (!closeButton) {
+          var actionButtons = element[0].querySelectorAll('.md-actions button');
+          closeButton = actionButtons[ actionButtons.length - 1 ];
+        }
+        return angular.element(closeButton);
+      }
+
+    }
+
+    // On remove function for all modelesss
+    function onRemove(scope, element, options) {
+
+      if (options.backdrop) {
+        $animate.leave(options.backdrop);
+      }
+      if (options.disableParentScroll) {
+        options.parent.css('overflow', options.lastOverflow);
+        delete options.lastOverflow;
+      }
+      if (options.escapeToClose) {
+        $rootElement.off('keyup', options.rootElementKeyupCallback);
+      }
+      if (options.clickOutsideToClose) {
+        element.off('click', options.modelessClickOutsideCallback);
+      }
+
+      applyAriaToSiblings(element, false);
+
+      return modelessPopOut(
+        element,
+        options.parent,
+        options.popInTarget && options.popInTarget.length && options.popInTarget
+      ).then(function() {
+        options.scope.$destroy();
+        element.remove();
+        options.popInTarget && options.popInTarget.focus();
+      });
+
+    }
+
+    /**
+     * Inject ARIA-specific attributes appropriate for Modelesss
+     */
+    function configureAria(element, role, options) {
+
+      element.attr({
+        'role': role,
+        'tabIndex': '-1'
+      });
+
+      var modelessContent = element.find('md-content');
+      if (modelessContent.length === 0){
+        modelessContent = element;
+      }
+
+      var modelessId = element.attr('id') || ('modeless_' + $mdUtil.nextUid());
+      modelessContent.attr('id', modelessId);
+      element.attr('aria-describedby', modelessId);
+
+      if (options.ariaLabel) {
+        $mdAria.expect(element, 'aria-label', options.ariaLabel);
+      }
+      else {
+        $mdAria.expectAsync(element, 'aria-label', function() {
+          var words = modelessContent.text().split(/\s+/);
+          if (words.length > 3) words = words.slice(0,3).concat('...');
+          return words.join(' ');
+        });
+      }
+    }
+    /**
+     * Utility function to filter out raw DOM nodes
+     */
+    function isNodeOneOf(elem, nodeTypeArray) {
+      if (nodeTypeArray.indexOf(elem.nodeName) !== -1) {
+        return true;
+      }
+    }
+    /**
+     * Walk DOM to apply or remove aria-hidden on sibling nodes
+     * and parent sibling nodes
+     *
+     * Prevents screen reader interaction behind modal window
+     * on swipe interfaces
+     */
+    function applyAriaToSiblings(element, value) {
+      var attribute = 'aria-hidden';
+
+      // get raw DOM node
+      element = element[0];
+
+      function walkDOM(element) {
+        while (element.parentNode) {
+          if (element === document.body) {
+            return;
+          }
+          var children = element.parentNode.children;
+          for (var i = 0; i < children.length; i++) {
+            // skip over child if it is an ascendant of the modeless
+            // or a script or style tag
+            if (element !== children[i] && !isNodeOneOf(children[i], ['SCRIPT', 'STYLE'])) {
+              children[i].setAttribute(attribute, value);
+            }
+          }
+
+          walkDOM(element = element.parentNode);
+        }
+      }
+      walkDOM(element);
+    }
+
+    function modelessPopIn(container, parentElement, clickElement) {
+      var modelessEl = container.find('md-modeless');
+
+      parentElement.append(container);
+      transformToClickElement(modelessEl, clickElement);
+
+      $$rAF(function() {
+        modelessEl.addClass('transition-in')
+          .css($mdConstant.CSS.TRANSFORM, '');
+      });
+
+      return $mdUtil.transitionEndPromise(modelessEl);
+    }
+
+    function modelessPopOut(container, parentElement, clickElement) {
+      var modelessEl = container.find('md-modeless');
+
+      modelessEl.addClass('transition-out').removeClass('transition-in');
+      transformToClickElement(modelessEl, clickElement);
+
+      return $mdUtil.transitionEndPromise(modelessEl);
+    }
+
+    function transformToClickElement(modelessEl, clickElement) {
+      if (clickElement) {
+        var clickRect = clickElement[0].getBoundingClientRect();
+        var modelessRect = modelessEl[0].getBoundingClientRect();
+
+        var scaleX = Math.min(0.5, clickRect.width / modelessRect.width);
+        var scaleY = Math.min(0.5, clickRect.height / modelessRect.height);
+
+        modelessEl.css($mdConstant.CSS.TRANSFORM, 'translate3d(' +
+          (-modelessRect.left + clickRect.left + clickRect.width/2 - modelessRect.width/2) + 'px,' +
+          (-modelessRect.top + clickRect.top + clickRect.height/2 - modelessRect.height/2) + 'px,' +
+          '0) scale(' + scaleX + ',' + scaleY + ')'
+        );
+      }
+    }
+
+    function modelessTransitionEnd(modelessEl) {
+      var deferred = $q.defer();
+      modelessEl.on($mdConstant.CSS.TRANSITIONEND, finished);
+      function finished(ev) {
+        //Make sure this transitionend didn't bubble up from a child
+        if (ev.target === modelessEl[0]) {
+          modelessEl.off($mdConstant.CSS.TRANSITIONEND, finished);
+          deferred.resolve();
+        }
+      }
+      return deferred.promise;
+    }
+
+  }
+}
+
+})();
